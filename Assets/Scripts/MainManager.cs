@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,6 +10,7 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
+    [SerializeField] Text bestScoreText;
     
     private bool m_Started = false;
     private int m_Points;
@@ -35,6 +34,13 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
+        }
+
+        ScoreManager.Instance.LoadBestScore();
+        if (ScoreManager.Instance.bestScoreName != "")
+        {
+            bestScoreText.gameObject.SetActive(true);
+            bestScoreText.text = "Best Score : " + ScoreManager.Instance.bestScoreName + " : " + ScoreManager.Instance.bestScore;
         }
     }
 
@@ -70,6 +76,14 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (m_Points > ScoreManager.Instance.bestScore)
+        {
+            ScoreManager.Instance.bestScore = m_Points;
+            ScoreManager.Instance.SaveBestScore();
+            bestScoreText.gameObject.SetActive(true);
+            bestScoreText.text = "Best Score : " + ScoreManager.Instance.currentName + " : " + m_Points;
+        }
+
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
